@@ -1,89 +1,15 @@
-import pickle
 import pandas as pd
 import streamlit as st
-from sklearn.compose import ColumnTransformer
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
-from sklearn.impute import SimpleImputer
 from modelo_regressor import regressor
-
-
-@st.cache_data
-def base_dados():
-    try:
-        return pd.read_csv('./dataset_aluguel/base_aluguel.csv')
-    except FileNotFoundError:
-        st.error("O arquivo 'base_aluguel.csv' não foi encontrado!")
-        return pd.DataFrame()
-
-def pre_processamento(
-    bairro: str,
-    tipo: str,
-    area: float,
-    banheiros: int,
-    suites: int,
-    quartos: int,
-    vaga: int,
-    condominio: float,
-    iptu: float
-):
-    nova_linha = {
-        'bairro': bairro,
-        'tipo_imovel': tipo,
-        'area_util': area,
-        'banheiros': banheiros,
-        'suites': suites,
-        'quartos': quartos,
-        'vaga_garagem': vaga,
-        'taxa_condominio': condominio,
-        'iptu_ano': iptu
-    }
-    nova_linha = pd.DataFrame(nova_linha, index=[0])
-    dados = base_dados()
-    dados = dados.iloc[:, :8]
-    dados = pd.concat([dados, nova_linha], ignore_index=True)
-
-    variavel_num = [
-        'area_util',
-        'banheiros',
-        'suites',
-        'quartos',
-        'vaga_garagem',
-        'taxa_condominio',
-        'iptu_ano'
-    ]
-    variavel_cat = ['bairro', 'tipo_imovel']
-
-    num_transformer = Pipeline(steps=[
-        ('imputer', SimpleImputer(strategy='mean')),
-        ('scaler', StandardScaler())
-    ])
-    cat_transformer = Pipeline(steps=[
-        ('imputer', SimpleImputer(strategy='most_frequent')),
-        ('onehot', OneHotEncoder(handle_unknown='ignore'))
-    ])
-
-    preprocessor = ColumnTransformer(
-        transformers=[
-            ('num', num_transformer, variavel_num),
-            ('cat', cat_transformer, variavel_cat),
-        ]
-    )
-
-    processed = preprocessor.fit_transform(dados)
-    return processed[-1].reshape(1, -1)
+from preprocessamento import base_dados, pre_processamento
 
 
 def filtro_bairro_tipo(dados: pd.DataFrame):
     bairro = st.selectbox(
-        'Escolha o Bairro:',
-        dados['bairro'].unique(),
-        index=None
+        'Escolha o Bairro:', dados['bairro'].unique(), index=None
     )
     tipo_imovel = st.selectbox(
-        'Escolha o tipo de imóvel:', 
-        dados['tipo_imovel'].unique(), 
-        index=None
+        'Escolha o tipo de imóvel:', dados['tipo_imovel'].unique(), index=None
     )
     return bairro, tipo_imovel
 
@@ -138,7 +64,7 @@ def main():
             quartos,
             vaga_garagem,
             taxa_condominio,
-            iptu_ano
+            iptu_ano,
         )
 
         modelo = regressor()
@@ -155,10 +81,11 @@ def main():
             'Quartos': quartos,
             'Vagas de Garagem': vaga_garagem,
             'Taxa de Condomínio': taxa_condominio,
-            'IPTU': iptu_ano
+            'IPTU': iptu_ano,
         }
 
         st.table(dados_filtros)
+
 
 if __name__ == '__main__':
     main()
