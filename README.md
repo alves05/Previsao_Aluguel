@@ -33,7 +33,7 @@ Implementação de um modelo de machine learning de regressão em um data app, p
 ### Executando o Data App
 - Clicando no box abaixo será direcionado para o aplicativo de previsão de preços de alugueis.
 
-[![App Previsão de Aluguel](https://img.shields.io/badge/App--Previsão--de--Preço--de--Alugueis-v1.0-fff?style=for-the-badge&labelColor=blue)]()
+[![App Previsão de Aluguel](https://img.shields.io/badge/App--Previsão--de--Preço--de--Alugueis-v1.0-fff?style=for-the-badge&labelColor=blue)](https://previsao-alugueis-sp.streamlit.app/)
 
 ### Conclusão
 
